@@ -8,7 +8,8 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'dev', credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/krish-1101/devops-build.git'
+                // Specify the correct credentialsId here as a string
+                git branch: 'dev', credentialsId: 'GITHUB_CREDENTIALS_ID', url: 'https://github.com/krish-1101/devops-build.git'
             }
         }
 
@@ -34,7 +35,8 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 script {
-                    withDockerRegistry([credentialsId: DOCKER_CREDENTIALS_ID, url: 'https://index.docker.io/v1/']) {
+                    // Specify the correct Docker credentialsId here as a string
+                    withDockerRegistry([credentialsId: 'DOCKER_CREDENTIALS_ID', url: 'https://index.docker.io/v1/']) {
                         sh 'docker push ${DOCKER_IMAGE}:${TAG}'
                     }
                 }
