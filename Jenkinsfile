@@ -9,34 +9,56 @@ pipeline {
     }
 
     stages {
+        // Checkout the code from your GitHub repository
         stage('Checkout Code') {
             steps {
-                // Checkout code from the GitHub repository
                 git branch: 'dev', credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/krish-1101/devops-build.git'
             }
         }
-        
-        stage('Build Docker Image') {
+
+        // Build the React app (or another frontend app)
+        stage('Build Frontend') {
             steps {
                 script {
-                    // Build the Docker image
-                    def customImage = docker.build("${DOCKER_IMAGE}:${TAG}") // Build Docker image
+                    // Install dependencies and build the project (e.g., React)
+                    sh 'npm install'
+                    sh 'npm run build' // This will generate the build directory
                 }
             }
         }
         
+        // Verify that the build directory exists before Docker tries to copy it
+        stage('Verify Build Directory') {
+            steps {
+                script {
+                    // Check if the 'build' directory exists, and output the contents
+                    sh 'ls -l build || echo "Build directory not found!"'
+                }
+            }
+        }
+
+        // Build the Docker image
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build Docker image using the Dockerfile
+                    customImage = docker.build("${DOCKER_IMAGE}:${TAG}")
+                }
+            }
+        }
+
+        // Push the Docker image to Docker Hub
         stage('Push to Docker Hub') {
             steps {
                 script {
-                    // Push the Docker image to Docker Hub
                     docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
-                        customImage.push() // Push the Docker image
+                        customImage.push() // Push the built image to Docker Hub
                     }
                 }
             }
         }
     }
-    
+
     post {
         success {
             echo 'Build and Push Successful!'
