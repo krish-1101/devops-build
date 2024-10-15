@@ -1,5 +1,5 @@
 pipeline {
-    agent any 
+    agent any
 
     environment {
         DOCKER_CREDENTIALS_ID = 'krish011' // Your Docker Hub credentials ID
@@ -9,50 +9,50 @@ pipeline {
     }
 
     stages {
-        // Checkout the code from your GitHub repository
         stage('Checkout Code') {
             steps {
-                git branch: 'dev', credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/krish-1101/devops-build.git'
+                // Checkout code from the GitHub repository
+                git branch: 'dev', credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/krish-1101/your-repo.git'
             }
         }
 
-        // Build the React app (or another frontend app)
         stage('Build Frontend') {
+            agent {
+                // Use a Node.js Docker image to run npm commands
+                docker {
+                    image 'node:14-alpine' // Choose a Node.js version based on your requirements
+                    args '-v /var/lib/jenkins/workspace:/workspace' // Mount workspace into the container
+                }
+            }
             steps {
                 script {
-                    // Install dependencies and build the project (e.g., React)
-                    sh 'npm install'
-                    sh 'npm run build' // This will generate the build directory
+                    sh 'npm install' // Install dependencies
+                    sh 'npm run build' // Run the build script
                 }
             }
         }
-        
-        // Verify that the build directory exists before Docker tries to copy it
+
         stage('Verify Build Directory') {
             steps {
-                script {
-                    // Check if the 'build' directory exists, and output the contents
-                    sh 'ls -l build || echo "Build directory not found!"'
-                }
+                sh 'ls -l build || echo "Build directory not found!"'
             }
         }
 
-        // Build the Docker image
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build Docker image using the Dockerfile
-                    customImage = docker.build("${DOCKER_IMAGE}:${TAG}")
+                    // Build the Docker image
+                    def customImage = docker.build("${DOCKER_IMAGE}:${TAG}")
                 }
             }
         }
 
-        // Push the Docker image to Docker Hub
         stage('Push to Docker Hub') {
             steps {
                 script {
+                    // Push the Docker image to Docker Hub
                     docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
-                        customImage.push() // Push the built image to Docker Hub
+                        customImage.push()
                     }
                 }
             }
