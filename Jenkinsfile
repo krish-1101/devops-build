@@ -1,11 +1,8 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'
-        GITHUB_CREDENTIALS_ID = 'github-pat-credentials-id'
-        DOCKER_IMAGE = 'krish011/my-react-app'
-        TAG = 'latest'
+    tools {
+        nodejs 'NodeJS 14' // Use the name you specified in Global Tool Configuration
     }
 
     stages {
@@ -18,7 +15,7 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 script {
-                    // Add npm or frontend build commands here
+                    // Install dependencies and build
                     sh 'npm install'
                     sh 'npm run build'
                 }
@@ -28,7 +25,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image
+                    // Build Docker image
                     sh 'docker build -t ${DOCKER_IMAGE}:${TAG} .'
                 }
             }
