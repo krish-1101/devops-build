@@ -2,13 +2,12 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'NodeJS 14' // Use the name you specified in Global Tool Configuration
+        nodejs 'NodeJS 14'
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                // Specify the correct credentialsId here as a string
                 git branch: 'dev', credentialsId: 'GITHUB_CREDENTIALS_ID', url: 'https://github.com/krish-1101/devops-build.git'
             }
         }
@@ -16,9 +15,8 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 script {
-                    // Install dependencies and build
-                    sh 'npm install'
-                    sh 'npm run build'
+                    sh 'npm install' // Install dependencies
+                    sh 'npm run build' // Build the project using the script in package.json
                 }
             }
         }
@@ -26,7 +24,6 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build Docker image
                     sh 'docker build -t ${DOCKER_IMAGE}:${TAG} .'
                 }
             }
@@ -35,8 +32,7 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 script {
-                    // Specify the correct Docker credentialsId here as a string
-                    withDockerRegistry([credentialsId: 'DOCKER_CREDENTIALS_ID', url: 'https://index.docker.io/v1/']) {
+                    withDockerRegistry([credentialsId: DOCKER_CREDENTIALS_ID, url: 'https://index.docker.io/v1/']) {
                         sh 'docker push ${DOCKER_IMAGE}:${TAG}'
                     }
                 }
