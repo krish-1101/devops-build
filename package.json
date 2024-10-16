@@ -4,10 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "build": "react-scripts build", // if you're using create-react-app
-  "test": "echo \"Error: no test specified\" && exit 1"
-}
-
+    "build": "react-scripts build", // Define your actual build command here
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -25,3 +23,4 @@
     "react-dom": "^18.3.1"
   }
 }
+
