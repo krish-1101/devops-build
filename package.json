@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "build": "react-scripts build", // if you're using create-react-app
+  "test": "echo \"Error: no test specified\" && exit 1"
+}
+
   },
   "repository": {
     "type": "git",
