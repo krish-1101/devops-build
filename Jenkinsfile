@@ -16,6 +16,8 @@ pipeline {
             steps {
                 script {
                     sh 'npm install' // Install dependencies
+                    // Create a dummy index.html file
+                    sh 'echo "<!DOCTYPE html><html><head><title>Dummy</title></head><body></body></html>" > public/index.html'
                     sh 'npm run build' // Build the project using the script in package.json
                 }
             }
