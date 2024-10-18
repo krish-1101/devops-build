@@ -31,32 +31,3 @@ pipeline {
                 }
             }
         }
-
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    sh 'docker build -t ${DOCKER_IMAGE}:${TAG} .'
-                }
-            }
-        }
-
-        stage('Push to Docker Hub') {
-            steps {
-                script {
-                    withDockerRegistry([credentialsId: DOCKER_CREDENTIALS_ID, url: 'https://index.docker.io/v1/']) {
-                        sh 'docker push ${DOCKER_IMAGE}:${TAG}'
-                    }
-                }
-            }
-        }
-    }
-
-    post {
-        success {
-            echo 'Build and Push Successful!'
-        }
-        failure {
-            echo 'Build Failed!'
-        }
-    }
-}
