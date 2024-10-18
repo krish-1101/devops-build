@@ -15,7 +15,7 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 script {
-                sh 'npm install'
+                    sh 'npm install'
                     sh 'echo "<!DOCTYPE html><html><head><title>Dummy</title></head><body></body></html>" > public/index.html'
                     sh 'npm run build'
                     sh '''
@@ -31,3 +31,5 @@ pipeline {
                 }
             }
         }
+    }
+}
