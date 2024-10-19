@@ -15,18 +15,19 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 script {
+                    // Install dependencies
                     sh 'npm install'
-                    sh 'echo "<!DOCTYPE html><html><head><title>Dummy</title></head><body></body></html>" > public/index.html'
-                    sh 'npm run build'
+
+                    // Ensure the public directory and index.html exist
                     sh '''
                     if [ ! -d "public" ]; then
                         echo "Creating public directory."
                         mkdir public
                     fi
+                    echo "<!DOCTYPE html><html><head><title>Dummy</title></head><body></body></html>" > public/index.html
                     '''
-                    sh 'npm run build || true'
-                    sh 'npm install'
-                    sh 'echo "<!DOCTYPE html><html><head><title>Dummy</title></head><body></body></html>" > public/index.html'
+
+                    // Build the project
                     sh 'npm run build'
                 }
             }
