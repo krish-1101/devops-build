@@ -1,0 +1,44 @@
+pipeline {
+    agent any 
+
+    environment {
+        GITHUB_CREDENTIALS_ID = 'krish-1101'
+        DOCKER_IMAGE_DEV = 'krish011/dev'
+        TAG = 'latest'
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: 'dev', credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/krish-1101/devops-build.git'
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    customImage = docker.build("${DOCKER_IMAGE_DEV}:${TAG}") // Build Docker image for dev
+                }
+            }
+        }
+        
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'krish011') {
+                        customImage.push() // Push to dev repo
+                    }
+                }
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo 'Dev Build and Push Successful!'
+        }
+        failure {
+            echo 'Dev Build Failed!'
+        }
+    }
+}
