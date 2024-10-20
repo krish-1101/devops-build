@@ -2,25 +2,23 @@ pipeline {
     agent any 
 
     environment {
-        DOCKER_CREDENTIALS_ID = 'krish011' // Your Docker Hub credentials ID
-        GITHUB_CREDENTIALS_ID = 'krish-1101' // Your GitHub credentials ID
-        DOCKER_IMAGE = 'krish011/dev' // Docker image name
-        TAG = 'latest' // Docker image tag
+        GITHUB_CREDENTIALS_ID = 'krish-1101'
+        DOCKER_IMAGE_DEV = 'krish011/dev'
+        DOCKER_IMAGE_PROD = 'krish011/prod'
+        TAG = 'latest'
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                // Checkout code from the GitHub repository
-                git branch: 'dev', credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/krish-1101/devops-build.git' // Update with your actual repo URL
+                git branch: env.BRANCH_NAME, credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/krish-1101/devops-build.git'
             }
         }
         
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image
-                    customImage = docker.build("${DOCKER_IMAGE}:${TAG}") // Build Docker image
+                    customImage = docker.build("${DOCKER_IMAGE_DEV}:${TAG}") // Build Docker image for dev
                 }
             }
         }
@@ -28,9 +26,17 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 script {
-                    // Push the Docker image to Docker Hub
-                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
-                        customImage.push() // Push the Docker image
+                    if (env.BRANCH_NAME == 'dev') {
+                        // Push to dev repo
+                        docker.withRegistry('https://index.docker.io/v1/', 'krish011') {
+                            customImage.push() // Push to dev
+                        }
+                    } else if (env.BRANCH_NAME == 'master') {
+                        // Push to prod repo
+                        customImage.tag("${DOCKER_IMAGE_PROD}:${TAG}") // Tag for prod
+                        docker.withRegistry('https://index.docker.io/v1/', 'krish011') {
+                            customImage.push("${DOCKER_IMAGE_PROD}:${TAG}") // Push to prod
+                        }
                     }
                 }
             }
