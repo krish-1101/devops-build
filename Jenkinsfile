@@ -12,25 +12,15 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 // Checkout code from the GitHub repository
-                git branch: 'dev', credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/krish-1101/devops-build.git'
+                git branch: 'dev', credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/krish-1101/devops-build.git' // Update with your actual repo URL
             }
         }
         
-        stage('Build Frontend') {
-            steps {
-                script {
-                    // Build the React app
-                    sh 'npm install'
-                    sh 'npm run build' // Ensure this generates the /build directory
-                }
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 script {
                     // Build the Docker image
-                    def customImage = docker.build("${DOCKER_IMAGE}:${TAG}", "--build-arg PORT=90 .") // Pass build argument if needed
+                    customImage = docker.build("${DOCKER_IMAGE}:${TAG}") // Build Docker image
                 }
             }
         }
