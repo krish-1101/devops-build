@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_CREDENTIALS_ID = 'krish011' // Your Docker Hub credentials ID
         GITHUB_CREDENTIALS_ID = 'krish-1101' // Your GitHub credentials ID
-        DOCKER_IMAGE = 'krish011/my-react-app' // Docker image name
+        DOCKER_IMAGE = 'krish011/dev' // Docker image name
         TAG = 'latest' // Docker image tag
     }
 
