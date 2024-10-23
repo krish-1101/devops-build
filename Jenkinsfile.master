@@ -15,20 +15,18 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Tag and Push Docker Image') {
             steps {
                 script {
-                    customImage = docker.build("${DOCKER_IMAGE_DEV}:${TAG}") // Build Docker image from dev
-                }
-            }
-        }
-
-        stage('Push to Prod Docker Hub') {
-            steps {
-                script {
-                    customImage.tag("${DOCKER_IMAGE_PROD}:${TAG}") // Tag the image for prod
                     docker.withRegistry('https://index.docker.io/v1/', 'krish011') {
-                        customImage.push("${DOCKER_IMAGE_PROD}:${TAG}") // Push to prod repo
+                        // Pull the latest dev image
+                        sh "docker pull ${DOCKER_IMAGE_DEV}:${TAG}"
+
+                        // Tag the dev image as prod
+                        sh "docker tag ${DOCKER_IMAGE_DEV}:${TAG} ${DOCKER_IMAGE_PROD}:${TAG}"
+
+                        // Push the prod image
+                        sh "docker push ${DOCKER_IMAGE_PROD}:${TAG}"
                     }
                 }
             }
@@ -37,10 +35,10 @@ pipeline {
 
     post {
         success {
-            echo 'Docker image successfully pushed to prod repository!'
+            echo 'Build and Push to Production Successful!'
         }
         failure {
-            echo 'Build failed, Docker image not pushed to prod.'
+            echo 'Build Failed!'
         }
     }
 }
